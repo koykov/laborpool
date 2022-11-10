@@ -26,7 +26,9 @@ func (w *Worker) wait(ctx context.Context) {
 	for {
 		select {
 		case job := <-w.jobs:
-			_ = job()
+			if job != nil {
+				_ = job()
+			}
 		case <-ctx.Done():
 			return
 		}
