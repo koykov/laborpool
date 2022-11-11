@@ -8,7 +8,7 @@ import (
 
 type Pool struct {
 	Size          uint
-	PensionRate   float32
+	PensionFactor float32
 	MetricsWriter MetricsWriter
 
 	p    *lbpool.Pool
@@ -23,14 +23,14 @@ func NewPool(size uint, rate float32) *Pool {
 func NewPoolWM(size uint, rate float32, mw MetricsWriter) *Pool {
 	p := Pool{
 		Size:          size,
-		PensionRate:   rate,
+		PensionFactor: rate,
 		MetricsWriter: mw,
 	}
 	return &p
 }
 
 func (p *Pool) init() {
-	p.p = lbpool.NewPool(p.Size, p.PensionRate)
+	p.p = lbpool.NewPool(p.Size, p.PensionFactor)
 	if p.MetricsWriter == nil {
 		p.MetricsWriter = DummyMetrics{}
 	}
