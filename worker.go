@@ -49,6 +49,7 @@ func (w *Worker) Release() {
 	}
 	w.cancel()
 	close(w.jobs)
+	atomic.StoreUint32(&w.status, 0)
 }
 
 func (w *Worker) checkStatus() bool {
