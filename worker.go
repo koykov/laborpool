@@ -12,6 +12,7 @@ type Worker struct {
 	cancel context.CancelFunc
 }
 
+// Train (make) new worker instance.
 func trainWorker() *Worker {
 	w := Worker{
 		status: 1,
@@ -22,6 +23,7 @@ func trainWorker() *Worker {
 	return &w
 }
 
+// Main worker function. Waits for new incoming jobs and execute them.
 func (w *Worker) wait(ctx context.Context) {
 	for {
 		select {
@@ -35,6 +37,7 @@ func (w *Worker) wait(ctx context.Context) {
 	}
 }
 
+// Do take a job in work.
 func (w *Worker) Do(job JobFn) error {
 	if !w.checkStatus() {
 		return ErrWorkerStatus
@@ -43,6 +46,7 @@ func (w *Worker) Do(job JobFn) error {
 	return nil
 }
 
+// Release stops worker.
 func (w *Worker) Release() {
 	if !w.checkStatus() {
 		return
