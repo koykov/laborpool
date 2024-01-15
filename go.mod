@@ -1,5 +1,5 @@
 module github.com/koykov/laborpool
 
-go 1.16
+go 1.18
 
-require github.com/koykov/lbpool v1.0.1
+require github.com/koykov/lbpool v1.0.2
