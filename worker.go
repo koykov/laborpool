@@ -5,7 +5,12 @@ import (
 	"sync/atomic"
 )
 
-type Worker struct {
+type Worker interface {
+	Do(job JobFn) error
+	Release()
+}
+
+type worker struct {
 	status uint32
 	jobs   chan JobFn
 	ctx    context.Context
@@ -13,8 +18,8 @@ type Worker struct {
 }
 
 // Train (make) new worker instance.
-func trainWorker() *Worker {
-	w := Worker{
+func trainWorker() *worker {
+	w := worker{
 		status: 1,
 		jobs:   make(chan JobFn, 1),
 	}
@@ -24,7 +29,7 @@ func trainWorker() *Worker {
 }
 
 // Main worker function. Waits for new incoming jobs and execute them.
-func (w *Worker) wait(ctx context.Context) {
+func (w *worker) wait(ctx context.Context) {
 	for {
 		select {
 		case job := <-w.jobs:
@@ -38,7 +43,7 @@ func (w *Worker) wait(ctx context.Context) {
 }
 
 // Do take a job in work.
-func (w *Worker) Do(job JobFn) error {
+func (w *worker) Do(job JobFn) error {
 	if !w.checkStatus() {
 		return ErrWorkerStatus
 	}
@@ -47,7 +52,7 @@ func (w *Worker) Do(job JobFn) error {
 }
 
 // Release stops worker.
-func (w *Worker) Release() {
+func (w *worker) Release() {
 	if !w.checkStatus() {
 		return
 	}
@@ -56,6 +61,6 @@ func (w *Worker) Release() {
 	atomic.StoreUint32(&w.status, 0)
 }
 
-func (w *Worker) checkStatus() bool {
+func (w *worker) checkStatus() bool {
 	return atomic.LoadUint32(&w.status) == 1
 }
