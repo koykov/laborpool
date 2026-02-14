@@ -10,3 +10,10 @@ type MetricsWriter interface {
 	// Retire registers worker leak (with release).
 	Retire()
 }
+
+// dummyMW is a stub metrics writer handler that uses by default and does nothing.
+type dummyMW struct{}
+
+func (dummyMW) Hire(bool) {}
+func (dummyMW) Fire()     {}
+func (dummyMW) Retire()   {}
