@@ -1,7 +1,8 @@
 package laborpool
 
 import (
-	"github.com/koykov/lbpool"
+	"github.com/koykov/lbpool/v2"
+	"github.com/koykov/lbpool/v2/sampler"
 )
 
 type Pool interface {
@@ -17,7 +18,7 @@ type pool struct {
 	rate float32
 
 	// p is an underlying lbpool instance that stores workers.
-	p *lbpool.Pool
+	p lbpool.Pool
 	// CC of MetricsWriters.
 	mw MetricsWriter
 }
@@ -27,6 +28,7 @@ func NewPool(size uint, rate float32, options ...Option) Pool {
 	p := &pool{
 		size: size,
 		rate: rate,
+		p:    lbpool.New(size, lbpool.WithSampler(sampler.NewBresenham(float64(rate)))),
 	}
 	for _, fn := range options {
 		fn(p)
